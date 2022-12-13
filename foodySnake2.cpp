@@ -122,7 +122,7 @@ void controller(void)
             mysnake.front_direction = UP;
             mysnake.turn_direction.push_back(mysnake.front_direction);
             mysnake.turn.push_back(mysnake.front);
-            usleep(100000);
+            usleep(1000000);
         }
         break;
     case KEY_DOWN:
@@ -131,7 +131,7 @@ void controller(void)
             mysnake.front_direction = DOWN;
             mysnake.turn_direction.push_back(mysnake.front_direction);
             mysnake.turn.push_back(mysnake.front);
-            usleep(100000);
+            usleep(1000000);
         }
         break;
     case KEY_LEFT:
@@ -140,7 +140,7 @@ void controller(void)
             mysnake.front_direction = LEFT;
             mysnake.turn_direction.push_back(mysnake.front_direction);
             mysnake.turn.push_back(mysnake.front);
-            usleep(100000);
+            usleep(1000000);
         }
         break;
     case KEY_RIGHT:
@@ -149,7 +149,7 @@ void controller(void)
             mysnake.front_direction = RIGHT;
             mysnake.turn_direction.push_back(mysnake.front_direction);
             mysnake.turn.push_back(mysnake.front);
-            usleep(100000);
+            usleep(1000000);
         }
         break;
     }
