@@ -19,7 +19,7 @@ using namespace std;
 #define A 97
 #define D 100
 
-#define random(x) (rand() % x + 1) //用來產生隨機數
+#define random(x) (rand() % x + 1) // 用來產生隨機數
 
 // Define Node which contains x and y coordinates.
 struct SNode // 結點
@@ -39,18 +39,21 @@ struct Snake
     int front_direction;      // 頭的前進方向
     int back_direction;       // 尾的消失方向
     int len;                  // Length of Snake
-} snake0, snake1;                    // 順便宣告 -> 我的蛇蛇
+} snake0, snake1;             // 順便宣告 -> 我的蛇蛇
 
 // 預先宣告一些會使用的參數以及函示
 int ch, eat, i;
 list<SNode>::iterator turn_iter;
+
+// 初始化蛇蛇
 void initSnake(Snake &snake);
+// 把蛇、水果畫上Terminal
 void draw_node(Snake snake, char paint);
 void draw_node(SNode node, char paint);
 void show(int signumber);
 void controllerP0(Snake &snake);
 void controllerP1(Snake &snake);
-void end_game(char* winner);
+void end_game(char *winner);
 bool crash(Snake &snake);
 
 // Main Function
@@ -62,13 +65,13 @@ int main()
     value.it_value.tv_usec = 400000;
     value.it_interval.tv_sec = 0;
     value.it_interval.tv_usec = 400000;
-    signal(SIGALRM, &show);
+    signal(SIGALRM, &show); // Start Alarm
 
     // Terminal Settings
-    initscr();            //初始化虛擬屏幕
-    raw();                //禁用行緩沖
-    noecho();             //關閉鍵盤回顯
-    keypad(stdscr, TRUE); //開啟功能鍵盤
+    initscr();            // 初始化虛擬屏幕
+    raw();                // 禁用行緩沖
+    noecho();             // 關閉鍵盤回顯
+    keypad(stdscr, TRUE); // 開啟功能鍵盤
 
     // Draw Border
     for (int i = 0; i < 40; i++)
@@ -89,7 +92,7 @@ int main()
     // 隨機播種
     fruit.x = random(20);
     fruit.y = random(20);
-    
+
     // Draw init location.
     draw_node(snake0, '0');
     draw_node(snake1, '1');
@@ -100,8 +103,8 @@ int main()
     refresh();
 
     // Ready to start
-    getch();                        //等待接收一個空字符，開始遊戲
-    setitimer(ITIMER_REAL, &value, NULL); //開啟定時器
+    getch();                              // 等待接收一個空字符，開始遊戲
+    setitimer(ITIMER_REAL, &value, NULL); // 開啟定時器
 
     // Continuing
     while (ch != KEY_F(2))
@@ -111,9 +114,10 @@ int main()
         controllerP1(snake1); // 控制：上下左右
     }
 
+    // *** 待新增功能: Press ... to restart ***
+
     return 0;
 }
-
 
 void initSnake(Snake &snake)
 {
@@ -122,7 +126,7 @@ void initSnake(Snake &snake)
     snake.front.x = position + 1, snake.front.y = position;
     snake.back.x = position, snake.back.y = position;
     snake0.front_direction = RIGHT, snake0.back_direction = RIGHT;
-    snake1.front_direction = 100, snake1.back_direction = 100;
+    snake1.front_direction = D, snake1.back_direction = D;
 }
 void controllerP0(Snake &snake)
 {
@@ -165,7 +169,6 @@ void controllerP0(Snake &snake)
         }
         break;
     }
-    
 }
 void controllerP1(Snake &snake)
 {
@@ -208,7 +211,6 @@ void controllerP1(Snake &snake)
         }
         break;
     }
-    
 }
 void draw_node(Snake snake, char paint)
 {
@@ -225,7 +227,8 @@ void show(int signumber)
     {
         // snake0
         eat = 0;
-        draw_node(snake0.back, ' ');
+        draw_node(snake0.back, ' '); // 先把尾巴的點刪掉
+        // 吃到水果
         if (snake0.front.x == fruit.x && snake0.front.y == fruit.y)
         {
             eat = 1;
@@ -235,6 +238,7 @@ void show(int signumber)
             fruit.y = random(19);
             draw_node(fruit, '*');
         }
+        // 在頭的行進方向畫上一個新的點（代表蛇向前進），若吃到水果 -> eat = 1，迴圈跑兩次（共畫上兩個點）
         for (int i = 0; i <= eat; i++)
         {
             switch (snake0.front_direction)
@@ -254,6 +258,7 @@ void show(int signumber)
             }
             draw_node(snake0.front, '0');
         }
+        // 紀錄尾巴方向
         switch (snake0.back_direction)
         {
         case UP:
@@ -269,13 +274,15 @@ void show(int signumber)
             snake0.back.x++;
             break;
         }
+
         if (snake0.turn_direction.size() && (snake0.back.x == snake0.turn.front().x && snake0.back.y == snake0.turn.front().y))
         {
             snake0.back_direction = snake0.turn_direction.front();
             snake0.turn_direction.pop_front();
             snake0.turn.pop_front();
         }
-        if (crash(snake0)) end_game("player_1");
+        if (crash(snake0))
+            end_game("player_1");
 
         // snake1
         eat = 0;
@@ -329,13 +336,14 @@ void show(int signumber)
             snake1.turn_direction.pop_front();
             snake1.turn.pop_front();
         }
-        if (crash(snake1)) end_game("player_0");
-        
+        if (crash(snake1))
+            end_game("player_0");
+
         // refresh board
         refresh();
     }
 }
-void end_game(char* winner)
+void end_game(char *winner)
 {
     struct itimerval value;
     value.it_value.tv_sec = 0;
@@ -345,22 +353,27 @@ void end_game(char* winner)
     setitimer(ITIMER_REAL, &value, NULL);
     mvprintw(22, 0, "*****  Game_over Winner is %s  *****", winner);
 }
+
+// 判定遊戲結束與否
 bool crash(Snake &snake)
 {
     int Max, Min;
     SNode tmp;
+
+    // 是否撞牆
     if (snake.front.x > 40 || snake.front.x <= 0 || snake.front.y <= 0 || snake.front.y > 20)
-        return true; //撞墻
-    /*推斷是否撞到自己*/
+        return true;
+
+    // 是否撞到自己
     if (!snake.turn.empty())
     {
-        i = snake.turn.size() - 1;
-        turn_iter = snake.turn.end();
+        i = snake.turn.size() - 1;    // last index
+        turn_iter = snake.turn.end(); //
 
         while (i--)
         {
-            tmp = *turn_iter;
-            turn_iter--;
+            tmp = *turn_iter; // 尾巴前一個node
+            turn_iter--;      // 尾巴前前一個node
             if ((*turn_iter).x == tmp.x && (*turn_iter).x == snake.front.x)
             {
                 Max = max((*turn_iter).y, tmp.y);
@@ -376,6 +389,7 @@ bool crash(Snake &snake)
                     return true;
             }
         }
+
         turn_iter = snake.turn.begin();
         if ((*turn_iter).x == snake.back.x && (*turn_iter).x == snake.front.x)
         {
