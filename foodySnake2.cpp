@@ -14,6 +14,10 @@ using namespace std;
 #define DOWN 2
 #define LEFT 3
 #define RIGHT 4
+#define W 119
+#define S 115
+#define A 97
+#define D 100
 
 #define random(x) (rand() % x + 1) //用來產生隨機數
 
@@ -35,16 +39,19 @@ struct Snake
     int front_direction;      // 頭的前進方向
     int back_direction;       // 尾的消失方向
     int len;                  // Length of Snake
-} mysnake;                    // 順便宣告 -> 我的蛇蛇
+} snake0, snake1;                    // 順便宣告 -> 我的蛇蛇
 
 // 預先宣告一些會使用的參數以及函示
 int ch, eat, i;
 list<SNode>::iterator turn_iter;
-void show(int signumber);
-void controller(void);
+void initSnake(Snake &snake);
+void draw_node(Snake snake, char paint);
 void draw_node(SNode node, char paint);
-void end_game();
-bool crash();
+void show(int signumber);
+void controllerP0(Snake &snake);
+void controllerP1(Snake &snake);
+void end_game(char* winner);
+bool crash(Snake &snake);
 
 // Main Function
 int main()
@@ -52,11 +59,10 @@ int main()
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
-    value.it_value.tv_usec = 200000;
+    value.it_value.tv_usec = 400000;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 200000;
+    value.it_interval.tv_usec = 400000;
     signal(SIGALRM, &show);
-    //	setitimer(ITIMER_REAL,&value,NULL);
 
     // Terminal Settings
     initscr();            //初始化虛擬屏幕
@@ -77,153 +83,259 @@ int main()
     }
 
     // 蛇蛇初始資料
-    mysnake.front.x = 2;
-    mysnake.front.y = 1;
-    mysnake.back.x = 1;
-    mysnake.back.y = 1;
-    mysnake.len = 2;
+    initSnake(snake0);
+    initSnake(snake1);
+
     // 隨機播種
     fruit.x = random(20);
     fruit.y = random(20);
+    
     // Draw init location.
-    draw_node(mysnake.front, '*');
-    draw_node(mysnake.back, '*');
-    draw_node(fruit, '#');
-    mysnake.front_direction = RIGHT;
-    mysnake.back_direction = RIGHT;
+    draw_node(snake0, '0');
+    draw_node(snake1, '1');
+    draw_node(fruit, '*');
 
-    mvprintw(22, 0, "******  Game: FoodySnake  Len:%d  ******", mysnake.len);
+    mvprintw(22, 0, "******  Game: FoodySnake  Len:%d  ******", snake0.len);
+    mvprintw(23, 0, "******  Game: FoodySnake  Len:%d  ******", snake1.len);
     refresh();
 
     // Ready to start
-    getch();                              //等待接收一個空字符，開始遊戲
+    getch();                        //等待接收一個空字符，開始遊戲
     setitimer(ITIMER_REAL, &value, NULL); //開啟定時器
 
     // Continuing
     while (ch != KEY_F(2))
     {
-        controller(); // 控制：上下左右
+        ch = getch();
+        controllerP0(snake0);
+        controllerP1(snake1); // 控制：上下左右
     }
-
-    // GaveOver
-    endwin(); // 結束遊戲
 
     return 0;
 }
 
-void controller(void)
+
+void initSnake(Snake &snake)
 {
-    ch = getch();
+    int position = random(40);
+    snake.len = 2;
+    snake.front.x = position + 1, snake.front.y = position;
+    snake.back.x = position, snake.back.y = position;
+    snake0.front_direction = RIGHT, snake0.back_direction = RIGHT;
+    snake1.front_direction = 100, snake1.back_direction = 100;
+}
+void controllerP0(Snake &snake)
+{
     switch (ch)
     {
     case KEY_UP:
-        if (mysnake.front_direction != DOWN && mysnake.front_direction != UP)
+        if (snake.front_direction != DOWN && snake.front_direction != UP)
         {
-            mysnake.front_direction = UP;
-            mysnake.turn_direction.push_back(mysnake.front_direction);
-            mysnake.turn.push_back(mysnake.front);
-            usleep(1000000);
+            snake.front_direction = UP;
+            snake.turn_direction.push_back(snake.front_direction);
+            snake.turn.push_back(snake.front);
+            usleep(500000);
         }
         break;
     case KEY_DOWN:
-        if (mysnake.front_direction != UP && mysnake.front_direction != DOWN)
+        if (snake.front_direction != UP && snake.front_direction != DOWN)
         {
-            mysnake.front_direction = DOWN;
-            mysnake.turn_direction.push_back(mysnake.front_direction);
-            mysnake.turn.push_back(mysnake.front);
-            usleep(1000000);
+            snake.front_direction = DOWN;
+            snake.turn_direction.push_back(snake.front_direction);
+            snake.turn.push_back(snake.front);
+            usleep(500000);
         }
         break;
     case KEY_LEFT:
-        if (mysnake.front_direction != RIGHT && mysnake.front_direction != LEFT)
+        if (snake.front_direction != RIGHT && snake.front_direction != LEFT)
         {
-            mysnake.front_direction = LEFT;
-            mysnake.turn_direction.push_back(mysnake.front_direction);
-            mysnake.turn.push_back(mysnake.front);
-            usleep(1000000);
+            snake.front_direction = LEFT;
+            snake.turn_direction.push_back(snake.front_direction);
+            snake.turn.push_back(snake.front);
+            usleep(500000);
         }
         break;
     case KEY_RIGHT:
-        if (mysnake.front_direction != LEFT && mysnake.front_direction != RIGHT)
+        if (snake.front_direction != LEFT && snake.front_direction != RIGHT)
         {
-            mysnake.front_direction = RIGHT;
-            mysnake.turn_direction.push_back(mysnake.front_direction);
-            mysnake.turn.push_back(mysnake.front);
-            usleep(1000000);
+            snake.front_direction = RIGHT;
+            snake.turn_direction.push_back(snake.front_direction);
+            snake.turn.push_back(snake.front);
+            usleep(500000);
         }
         break;
     }
+    
+}
+void controllerP1(Snake &snake)
+{
+    switch (ch)
+    {
+    case W:
+        if (snake.front_direction != W && snake.front_direction != S)
+        {
+            snake.front_direction = W;
+            snake.turn_direction.push_back(snake.front_direction);
+            snake.turn.push_back(snake.front);
+            usleep(500000);
+        }
+        break;
+    case S:
+        if (snake.front_direction != W && snake.front_direction != S)
+        {
+            snake.front_direction = S;
+            snake.turn_direction.push_back(snake.front_direction);
+            snake.turn.push_back(snake.front);
+            usleep(500000);
+        }
+        break;
+    case A:
+        if (snake.front_direction != D && snake.front_direction != A)
+        {
+            snake.front_direction = A;
+            snake.turn_direction.push_back(snake.front_direction);
+            snake.turn.push_back(snake.front);
+            usleep(500000);
+        }
+        break;
+    case D:
+        if (snake.front_direction != A && snake.front_direction != D)
+        {
+            snake.front_direction = D;
+            snake.turn_direction.push_back(snake.front_direction);
+            snake.turn.push_back(snake.front);
+            usleep(500000);
+        }
+        break;
+    }
+    
+}
+void draw_node(Snake snake, char paint)
+{
+    mvaddch(snake.front.y, snake.front.x, paint);
+    mvaddch(snake.back.y, snake.back.x, paint);
+}
+void draw_node(SNode node, char paint)
+{
+    mvaddch(node.y, node.x, paint);
 }
 void show(int signumber)
 {
     if (signumber == SIGALRM)
     {
+        // snake0
         eat = 0;
-        draw_node(mysnake.back, ' ');
-        // 吃到果實
-        if (mysnake.front.x == fruit.x && mysnake.front.y == fruit.y)
+        draw_node(snake0.back, ' ');
+        if (snake0.front.x == fruit.x && snake0.front.y == fruit.y)
+        {
             eat = 1;
+            snake0.len++;
+            mvprintw(22, 0, "******  Game: FoodySnake  Len:%d  ******", snake0.len);
+            fruit.x = random(19);
+            fruit.y = random(19);
+            draw_node(fruit, '*');
+        }
         for (int i = 0; i <= eat; i++)
         {
-            switch (mysnake.front_direction)
+            switch (snake0.front_direction)
             {
             case UP:
-                mysnake.front.y--;
+                snake0.front.y--;
                 break;
             case DOWN:
-                mysnake.front.y++;
+                snake0.front.y++;
                 break;
             case LEFT:
-                mysnake.front.x--;
+                snake0.front.x--;
                 break;
             case RIGHT:
-                mysnake.front.x++;
+                snake0.front.x++;
                 break;
             }
-            draw_node(mysnake.front, '*');
+            draw_node(snake0.front, '0');
         }
-        switch (mysnake.back_direction)
+        switch (snake0.back_direction)
         {
         case UP:
-            mysnake.back.y--;
+            snake0.back.y--;
             break;
         case DOWN:
-            mysnake.back.y++;
+            snake0.back.y++;
             break;
         case LEFT:
-            mysnake.back.x--;
+            snake0.back.x--;
             break;
         case RIGHT:
-            mysnake.back.x++;
+            snake0.back.x++;
             break;
         }
-        if (mysnake.turn_direction.size() && (mysnake.back.x == mysnake.turn.front().x && mysnake.back.y == mysnake.turn.front().y))
+        if (snake0.turn_direction.size() && (snake0.back.x == snake0.turn.front().x && snake0.back.y == snake0.turn.front().y))
         {
-            mysnake.back_direction = mysnake.turn_direction.front();
-            mysnake.turn_direction.pop_front();
-            mysnake.turn.pop_front();
+            snake0.back_direction = snake0.turn_direction.front();
+            snake0.turn_direction.pop_front();
+            snake0.turn.pop_front();
         }
+        if (crash(snake0)) end_game("player_1");
 
-        if (crash())
-            end_game();
-        if (eat)
+        // snake1
+        eat = 0;
+        draw_node(snake1.back, ' ');
+        if (snake1.front.x == fruit.x && snake1.front.y == fruit.y)
         {
-            mysnake.len++;
-            mvprintw(22, 0, "******  Game: FoodySnake  Len:%d  ******", mysnake.len);
-            fruit.x = random(20);
-            fruit.y = random(20);
-            draw_node(fruit, '#');
+            eat = 1;
+            snake1.len++;
+            mvprintw(23, 0, "******  Game: FoodySnake  Len:%d  ******", snake1.len);
+            fruit.x = random(18);
+            fruit.y = random(18);
+            draw_node(fruit, '*');
         }
+        for (int i = 0; i <= eat; i++)
+        {
+            switch (snake1.front_direction)
+            {
+            case W:
+                snake1.front.y--;
+                break;
+            case S:
+                snake1.front.y++;
+                break;
+            case A:
+                snake1.front.x--;
+                break;
+            case D:
+                snake1.front.x++;
+                break;
+            }
+            draw_node(snake1.front, '1');
+        }
+        switch (snake1.back_direction)
+        {
+        case W:
+            snake1.back.y--;
+            break;
+        case S:
+            snake1.back.y++;
+            break;
+        case A:
+            snake1.back.x--;
+            break;
+        case D:
+            snake1.back.x++;
+            break;
+        }
+        if (snake1.turn_direction.size() && (snake1.back.x == snake1.turn.front().x && snake1.back.y == snake1.turn.front().y))
+        {
+            snake1.back_direction = snake1.turn_direction.front();
+            snake1.turn_direction.pop_front();
+            snake1.turn.pop_front();
+        }
+        if (crash(snake1)) end_game("player_0");
+        
+        // refresh board
         refresh();
     }
 }
-
-void draw_node(SNode node, char paint)
-{
-    mvaddch(node.y, node.x, paint);
-}
-
-void end_game()
+void end_game(char* winner)
 {
     struct itimerval value;
     value.it_value.tv_sec = 0;
@@ -231,52 +343,53 @@ void end_game()
     value.it_interval.tv_sec = 0;
     value.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &value, NULL);
-    mvprintw(10, 18, "Game_over");
+    mvprintw(22, 0, "*****  Game_over Winner is %s  *****", winner);
+    exit(1);
 }
-bool crash()
+bool crash(Snake &snake)
 {
     int Max, Min;
     SNode tmp;
-    if (mysnake.front.x > 40 || mysnake.front.x <= 0 || mysnake.front.y <= 0 || mysnake.front.y > 20)
+    if (snake.front.x > 40 || snake.front.x <= 0 || snake.front.y <= 0 || snake.front.y > 20)
         return true; //撞墻
     /*推斷是否撞到自己*/
-    if (!mysnake.turn.empty())
+    if (!snake.turn.empty())
     {
-        i = mysnake.turn.size() - 1;
-        turn_iter = mysnake.turn.end();
+        i = snake.turn.size() - 1;
+        turn_iter = snake.turn.end();
 
         while (i--)
         {
             tmp = *turn_iter;
             turn_iter--;
-            if ((*turn_iter).x == tmp.x && (*turn_iter).x == mysnake.front.x)
+            if ((*turn_iter).x == tmp.x && (*turn_iter).x == snake.front.x)
             {
                 Max = max((*turn_iter).y, tmp.y);
                 Min = min((*turn_iter).y, tmp.y);
-                if (mysnake.front.y >= Min && mysnake.front.y <= Max)
+                if (snake.front.y >= Min && snake.front.y <= Max)
                     return true;
             }
-            else if ((*turn_iter).y == tmp.y && (*turn_iter).y == mysnake.front.y)
+            else if ((*turn_iter).y == tmp.y && (*turn_iter).y == snake.front.y)
             {
                 Max = max((*turn_iter).x, tmp.x);
                 Min = min((*turn_iter).x, tmp.x);
-                if (mysnake.front.x >= Min && mysnake.front.x <= Max)
+                if (snake.front.x >= Min && snake.front.x <= Max)
                     return true;
             }
         }
-        turn_iter = mysnake.turn.begin();
-        if ((*turn_iter).x == mysnake.back.x && (*turn_iter).x == mysnake.front.x)
+        turn_iter = snake.turn.begin();
+        if ((*turn_iter).x == snake.back.x && (*turn_iter).x == snake.front.x)
         {
-            Max = max((*turn_iter).y, mysnake.back.y);
-            Min = min((*turn_iter).y, mysnake.back.y);
-            if (mysnake.front.y >= Min && mysnake.front.y <= Max)
+            Max = max((*turn_iter).y, snake.back.y);
+            Min = min((*turn_iter).y, snake.back.y);
+            if (snake.front.y >= Min && snake.front.y <= Max)
                 return true;
         }
-        else if ((*turn_iter).y == mysnake.back.y && (*turn_iter).y == mysnake.front.y)
+        else if ((*turn_iter).y == snake.back.y && (*turn_iter).y == snake.front.y)
         {
-            Max = max((*turn_iter).x, mysnake.back.x);
-            Min = min((*turn_iter).x, mysnake.back.x);
-            if (mysnake.front.x >= Min && mysnake.front.x <= Max)
+            Max = max((*turn_iter).x, snake.back.x);
+            Min = min((*turn_iter).x, snake.back.x);
+            if (snake.front.x >= Min && snake.front.x <= Max)
                 return true;
         }
     }
