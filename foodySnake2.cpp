@@ -27,7 +27,7 @@ struct SNode // 結點
     int x;
     int y;
     // SNode *next;
-} fruit; // 順便宣告 fruit <- 蛇蛇要吃的。
+} fruit, bomb; // 順便宣告 fruit <- 蛇蛇要吃的。
 
 // Define Snake
 struct Snake
@@ -92,11 +92,14 @@ int main()
     // 隨機播種
     fruit.x = random(20);
     fruit.y = random(20);
+    bomb.x = random(20);
+    bomb.y = random(20);
 
     // Draw init location.
     draw_node(snake0, '0');
     draw_node(snake1, '1');
     draw_node(fruit, '*');
+    draw_node(bomb, 'x');
 
     mvprintw(22, 0, "******  Game: FoodySnake  Len:%d  ******", snake0.len);
     mvprintw(23, 0, "******  Game: FoodySnake  Len:%d  ******", snake1.len);
@@ -281,7 +284,7 @@ void show(int signumber)
             snake0.turn_direction.pop_front();
             snake0.turn.pop_front();
         }
-        if (crash(snake0))
+        if (crash(snake0) || (snake0.front.x == bomb.x && snake0.front.y == bomb.y))
             end_game("player_1");
 
         // snake1
@@ -336,7 +339,7 @@ void show(int signumber)
             snake1.turn_direction.pop_front();
             snake1.turn.pop_front();
         }
-        if (crash(snake1))
+        if (crash(snake1) || (snake1.front.x == bomb.x && snake1.front.y == bomb.y))
             end_game("player_0");
 
         // refresh board
