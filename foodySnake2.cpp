@@ -344,7 +344,6 @@ void end_game(char* winner)
     value.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &value, NULL);
     mvprintw(22, 0, "*****  Game_over Winner is %s  *****", winner);
-    exit(1);
 }
 bool crash(Snake &snake)
 {
