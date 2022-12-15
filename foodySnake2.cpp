@@ -65,6 +65,8 @@ void gameoverMessage();
 // Main Function
 int main()
 {
+    welcomeMessage();
+    clear();
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
@@ -383,7 +385,9 @@ void end_game(char *winner)
     value.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &value, NULL);
     mvprintw(22, 0, "*****  Game_over Winner is %s  *****", winner);
+    gameoverMessage();
 }
+
 void restartGame()
 {
     // Time Settings
