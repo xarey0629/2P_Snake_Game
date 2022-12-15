@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
+#include <string.h>
 using namespace std;
 
 /************* 定義方向 ****************/
@@ -18,6 +19,7 @@ using namespace std;
 #define S 115
 #define A 97
 #define D 100
+#define R 114
 
 #define random(x) (rand() % x + 1) // 用來產生隨機數
 
@@ -54,7 +56,11 @@ void show(int signumber);
 void controllerP0(Snake &snake);
 void controllerP1(Snake &snake);
 void end_game(char *winner);
+void restartGame();
 bool crash(Snake &snake);
+// 初始頁面、最終頁面
+void welcomeMessage();
+void gameoverMessage();
 
 // Main Function
 int main()
@@ -63,9 +69,10 @@ int main()
     struct itimerval value;
     value.it_value.tv_sec = 0;
     value.it_value.tv_usec = 400000;
+    // value.it_value.tv_usec = 0;
     value.it_interval.tv_sec = 0;
     value.it_interval.tv_usec = 400000;
-    signal(SIGALRM, &show); // Start Alarm
+    // signal(SIGALRM, &show); // Start Alarm
 
     // Terminal Settings
     initscr();            // 初始化虛擬屏幕
@@ -107,17 +114,38 @@ int main()
 
     // Ready to start
     getch();                              // 等待接收一個空字符，開始遊戲
+    signal(SIGALRM, &show);               // Start Alarm
     setitimer(ITIMER_REAL, &value, NULL); // 開啟定時器
 
     // Continuing
-    while (ch != KEY_F(2))
+    while (ch != KEY_F(2)) // Press F2 to exit the game.
     {
         ch = getch();
         controllerP0(snake0);
         controllerP1(snake1); // 控制：上下左右
     }
+    end_game("Tie");
 
-    // *** 待新增功能: Press ... to restart ***
+    // End Page
+    clear();
+    gameoverMessage();
+
+    // *** 新增功能: Press R to restart ***
+    ch = getch();
+    if (ch == R)
+    {
+        restartGame();
+        // *** TODO：Restart the game background.
+        // ...
+        while (ch != KEY_F(2)) // Press F2 to exit the game.
+        {
+            ch = getch();
+            controllerP0(snake0);
+            controllerP1(snake1); // 控制：上下左右
+        }
+    }
+    // signal(SIGALRM, &show); // Start Alarm
+    endwin();
 
     return 0;
 }
@@ -356,6 +384,17 @@ void end_game(char *winner)
     setitimer(ITIMER_REAL, &value, NULL);
     mvprintw(22, 0, "*****  Game_over Winner is %s  *****", winner);
 }
+void restartGame()
+{
+    // Time Settings
+    struct itimerval value;
+    value.it_value.tv_sec = 0;
+    value.it_value.tv_usec = 400000;
+    value.it_interval.tv_sec = 0;
+    value.it_interval.tv_usec = 400000;
+    setitimer(ITIMER_REAL, &value, NULL);
+    // signal(SIGALRM, &show); // Start Alarm
+}
 
 // 判定遊戲結束與否
 bool crash(Snake &snake)
@@ -411,4 +450,66 @@ bool crash(Snake &snake)
     }
 
     return false;
+}
+
+void welcomeMessage() // foodySnake
+{
+    char mesg[7][150] = {"  ______    ______    ______    _____    __    __    ____     _     _      ___      _   _     ______  ",
+                         " |  ____|  | ____ |  | ____ |  |  __ \\   \\ \\  / /   / __ \\   |  \\  | |    / _ \\    | | / /   |  ____| ",
+                         " | |____   | |  | |  | |  | |  | |  \\ \\   \\ \\/ /   / /  \\_\\  | \\ \\ | |   / / \\ \\   | |/ /    | |____  ",
+                         " |  ____|  | |  | |  | |  | |  | |  | |    \\  /    \\ \\____   | |\\ \\| |  | |___| |  |   \\     |  ____| ",
+                         " | |       | |  | |  | |  | |  | |  | |     | |     \\____ \\  | | \\ \\ |  | _____ |  | |\\ \\    | |      ",
+                         " | |       | |__| |  | |__| |  | |__/ /     | |    _____| |  | |  \\  |  | |   | |  | | \\ \\   | |____  ",
+                         " |_|       |______|  |______|  |_____/      |_|    \\______/  |_|   \\_|  |_|   |_|  |_|  \\_\\  |______| "};
+
+    // 以下註解為方便更改字型設計所用
+    //  "  ______    ______    ______    _____    __    __    ____     _     _      ___      _   _     ______  ",
+    //  " |  ____|  | ____ |  | ____ |  |  __ \   \ \  / /   / __ \   |  \  | |    / _ \    | | / /   |  ____| ",
+    //  " | |____   | |  | |  | |  | |  | |  \ \   \ \/ /   / /  \_\  | \ \ | |   / / \ \   | |/ /    | |____  ",
+    //  " |  ____|  | |  | |  | |  | |  | |  | |    \  /    \ \____   | |\ \| |  | |___| |  |   \     |  ____| ",
+    //  " | |       | |  | |  | |  | |  | |  | |     | |     \____ \  | | \ \ |  | _____ |  | |\ \    | |      ",
+    //  " | |       | |__| |  | |__| |  | |__/ /     | |    _____| |  | |  \  |  | |   | |  | | \ \   | |____  ",
+    //  " |_|       |______|  |______|  |_____/      |_|    \______/  |_|   \_|  |_|   |_|  |_|  \_\  |______| "};
+
+    int row, col;                                                                  // to store the number of rows and the number of colums of the screen
+    initscr();                                                                     // start the curses mode(initialize the ncurses data structures)
+    getmaxyx(stdscr, row, col);                                                    // get the number of rows and columns
+    for (int i = -6; i < 1; i++)                                                   // 標題置於中央往上移三行
+        mvprintw(row / 2 + i, (col - strlen(mesg[i + 6])) / 2, "%s", mesg[i + 6]); // print the message at the center of the screen
+    char pressMesg[] = "Press R/r to see the game rule.              Press any other key to start.";
+    mvprintw(row / 2 + 4, (col - strlen(pressMesg)) / 2, "%s", pressMesg); // pressMesg置於中央往下移4行
+    refresh();                                                             // to update the physical terminal optimally
+    getch();                                                               // wait for user input a character
+    // endwin(); // clean up all allocated resources from ncurses
+}
+
+void gameoverMessage()
+{
+    char mesg[7][150] = {"   _____       ___      _     _    ______    ______    _      _   ______    ______   ",
+                         "  / ___ \\     / _ \\    | \\   / |  |  ____|  | ____ |  | |   | |  |  ____|  |  __  \\  ",
+                         " / |   |_|   / / \\ \\   |  \\_/  |  | |____   | |  | |  | |   | |  | |____   | |__/ /  ",
+                         " | |   __   | |___| |  | \\   / |  |  ____|  | |  | |  | |   | |  |  ____|  |  _  /   ",
+                         " | |  |_ |  | _____ |  | |\\_/| |  | |       | |  | |  \\  \\_/  /  | |       | | \\ \\   ",
+                         " \\ \\___/ /  | |   | |  | |   | |  | |____   | |__| |   \\     /   | |____   | |  \\ \\  ",
+                         "  \\_____/   |_|   |_|  |_|   |_|  |______|  |______|    \\___/    |______|  |_|   \\_\\ "};
+
+    // 以下註解為方便更改字型設計所用
+    //  "   _____       ___      _     _    ______    ______    _      _   ______    ______   ",
+    //  "  / ___ \     / _ \    | \   / |  |  ____|  | ____ |  | |   | |  |  ____|  |  __  \  ",
+    //  " / |   |_|   / / \ \   |  \_/  |  | |____   | |  | |  | |   | |  | |____   | |__/ /  ",
+    //  " | |   __   | |___| |  | \   / |  |  ____|  | |  | |  | |   | |  |  ____|  |  _  /   ",
+    //  " | |  |_ |  | _____ |  | |\_/| |  | |       | |  | |  \  \_/  /  | |       | | \ \   ",
+    //  " \ \___/ /  | |   | |  | |   | |  | |____   | |__| |   \     /   | |____   | |  \ \  ",
+    //  "  \_____/   |_|   |_|  |_|   |_|  |______|  |______|    \___/    |______|  |_|   \_\ "};
+
+    int row, col;                                                                  // to store the number of rows and the number of colums of the screen
+    initscr();                                                                     // start the curses mode(initialize the ncurses data structures)
+    getmaxyx(stdscr, row, col);                                                    // get the number of rows and columns
+    for (int i = -6; i < 1; i++)                                                   // 標題置於中央往上移三行
+        mvprintw(row / 2 + i, (col - strlen(mesg[i + 6])) / 2, "%s", mesg[i + 6]); // print the message at the center of the screen
+    char pressMesg[] = "Press P/p to play again.              Press Q/q to quit.";
+    mvprintw(row / 2 + 4, (col - strlen(pressMesg)) / 2, "%s", pressMesg); // pressMesg置於中央往下移4行
+    refresh();                                                             // to update the physical terminal optimally
+    // getch();                                                               // wait for user input a character
+    // endwin();                                                              // clean up all allocated resources from ncurses
 }
