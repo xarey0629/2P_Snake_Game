@@ -63,6 +63,8 @@ void gameoverMessage();
 // Main Function
 int main()
 {
+    welcomeMessage();
+    clear();
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
@@ -120,7 +122,7 @@ int main()
         controllerP0(snake0);
         controllerP1(snake1); // 控制：上下左右
     }
-
+    
     // *** 待新增功能: Press ... to restart ***
 
     return 0;
@@ -359,6 +361,7 @@ void end_game(char *winner)
     value.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &value, NULL);
     mvprintw(22, 0, "*****  Game_over Winner is %s  *****", winner);
+    gameoverMessage();
 }
 void welcomeMessage() // foodySnake
 {
