@@ -46,6 +46,7 @@ struct Snake
 
 // 預先宣告一些會使用的參數以及函示
 int ch, eat, i;
+bool gameStatus = true;
 list<SNode>::iterator turn_iter;
 
 // 初始化蛇蛇
@@ -122,11 +123,21 @@ int main()
     setitimer(ITIMER_REAL, &value, NULL); // 開啟定時器
 
     // Continuing
-    while (ch != KEY_F(2)) // Press F2 to exit the game.
+    while (ch != KEY_F(2) && gameStatus) // Press F2 to exit the game.
     {
         ch = getch();
         controllerP0(snake0);
         controllerP1(snake1); // 控制：上下左右
+        if (crash(snake0) || (snake0.front.x == bomb.x && snake0.front.y == bomb.y))
+        {
+            gameStatus = false;
+            end_game("player_1");
+        }
+        if (crash(snake1) || (snake1.front.x == bomb.x && snake1.front.y == bomb.y))
+        {
+            gameStatus = false;
+            end_game("player_0");
+        }
     }
     end_game("Tie");
 
@@ -141,11 +152,21 @@ int main()
         restartGame();
         // *** TODO：Restart the game background.
         // ...
-        while (ch != KEY_F(2)) // Press F2 to exit the game.
+        while (ch != KEY_F(2) && gameStatus) // Press F2 to exit the game.
         {
             ch = getch();
             controllerP0(snake0);
             controllerP1(snake1); // 控制：上下左右
+            if (crash(snake0) || (snake0.front.x == bomb.x && snake0.front.y == bomb.y))
+            {
+                gameStatus = false;
+                end_game("player_1");
+            }
+            if (crash(snake1) || (snake1.front.x == bomb.x && snake1.front.y == bomb.y))
+            {
+                gameStatus = false;
+                end_game("player_0");
+            }
         }
     }
     // signal(SIGALRM, &show); // Start Alarm
@@ -309,7 +330,6 @@ void show(int signumber)
             snake0.back.x++;
             break;
         }
-
         if (snake0.turn_direction.size() && (snake0.back.x == snake0.turn.front().x && snake0.back.y == snake0.turn.front().y))
         {
             snake0.back_direction = snake0.turn_direction.front();
@@ -317,7 +337,11 @@ void show(int signumber)
             snake0.turn.pop_front();
         }
         if (crash(snake0) || (snake0.front.x == bomb.x && snake0.front.y == bomb.y))
+        {
+            gameStatus = false;
             end_game("player_1");
+        }
+            
 
         // snake1
         eat = 0;
@@ -372,8 +396,11 @@ void show(int signumber)
             snake1.turn.pop_front();
         }
         if (crash(snake1) || (snake1.front.x == bomb.x && snake1.front.y == bomb.y))
+        {
+            gameStatus = false;
             end_game("player_0");
-
+        }
+            
         // refresh board
         refresh();
     }
