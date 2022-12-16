@@ -85,15 +85,15 @@ int main()
     keypad(stdscr, TRUE); // 開啟功能鍵盤
 
     // Draw Border
-    for (int i = 0; i < 40; i++)
+    for (int i = 48; i < 88; i++)
     {
         mvaddch(0, i, '-');
         mvaddch(21, i, '-');
     }
     for (int i = 0; i < 21; i++)
     {
-        mvaddch(i, 0, '|');
-        mvaddch(i, 41, '|');
+        mvaddch(i, 48, '|');
+        mvaddch(i, 89, '|');
     }
 
     // 蛇蛇初始資料
@@ -112,8 +112,8 @@ int main()
     draw_node(fruit, '*');
     draw_node(bomb, 'x');
 
-    mvprintw(22, 0, "******  Game: FoodySnake  Len:%d  ******", snake0.len);
-    mvprintw(23, 0, "******  Game: FoodySnake  Len:%d  ******", snake1.len);
+    mvprintw(22, 48, "******  Game: FoodySnake  Len:%d  ******", snake0.len);
+    mvprintw(23, 48, "******  Game: FoodySnake  Len:%d  ******", snake1.len);
     refresh();
 
     // Ready to start
@@ -481,7 +481,8 @@ void welcomeMessage() // foodySnake
     //  " | |       | |__| |  | |__| |  | |__/ /     | |    _____| |  | |  \  |  | |   | |  | | \ \   | |____  ",
     //  " |_|       |______|  |______|  |_____/      |_|    \______/  |_|   \_|  |_|   |_|  |_|  \_\  |______| "};
 
-    win = newwin(4, 100, 0, 0);
+    win = newwin(10, 60, 0, 48);
+    box(win, '|', '-');
     mvwaddstr(win, 1, 2, "This is the rule for the game:");
     mvwaddstr(win, 2, 2, "1. This is the FOODY SNAKE game.");                      // to store the number of rows and the number of colums of the screen
                                                                                    // start the curses mode(initialize the ncurses data structures)
@@ -499,7 +500,8 @@ void welcomeMessage() // foodySnake
     {
     case 'r': /* 按 'q' 鍵離開 */
         endwin();
-
+    case 'R':
+        endwin();
     case '\t':         /* 按 [TAB] 鍵 呼叫另一視窗   */
         touchwin(win); /* wrefresh() 前需 touchwin() */
         wrefresh(win);
