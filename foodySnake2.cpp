@@ -75,7 +75,7 @@ int main()
     value.it_value.tv_usec = 400000;
     // value.it_value.tv_usec = 0;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 400000;
+    value.it_interval.tv_usec = 200000;
     // signal(SIGALRM, &show); // Start Alarm
 
     // Terminal Settings
@@ -122,33 +122,25 @@ int main()
     setitimer(ITIMER_REAL, &value, NULL); // 開啟定時器
 
     // Continuing
-    while (ch != KEY_F(2)) // Press F2 to exit the game.
+    while (ch == R)
     {
-        ch = getch();
-        controllerP0(snake0);
-        controllerP1(snake1); // 控制：上下左右
-    }
-    end_game("Tie");
-
-    // End Page
-    clear();
-    gameoverMessage();
-
-    // *** 新增功能: Press R to restart ***
-    ch = getch();
-    if (ch == R)
-    {
-        restartGame();
-        // *** TODO：Restart the game background.
-        // ...
         while (ch != KEY_F(2)) // Press F2 to exit the game.
         {
             ch = getch();
             controllerP0(snake0);
             controllerP1(snake1); // 控制：上下左右
         }
+        end_game("Tie");
+        // End Page
+        clear();
+        gameoverMessage();
+        ch = getch();
+        if (ch == R)
+        {
+            restartGame();
+        }
     }
-    // signal(SIGALRM, &show); // Start Alarm
+
     endwin();
 
     return 0;
