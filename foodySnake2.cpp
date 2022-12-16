@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 using namespace std;
 
 /************* 定義方向 ****************/
@@ -67,6 +68,7 @@ int main()
 {
     welcomeMessage();
     clear();
+
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
@@ -385,7 +387,6 @@ void end_game(char *winner)
     value.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &value, NULL);
     mvprintw(22, 0, "*****  Game_over Winner is %s  *****", winner);
-    // gameoverMessage();
 }
 
 void restartGame()
@@ -458,6 +459,11 @@ bool crash(Snake &snake)
 
 void welcomeMessage() // foodySnake
 {
+    int row, col;
+    WINDOW *win;
+    initscr();
+    raw(); // 禁用行緩沖
+    noecho();
     char mesg[7][150] = {"  ______    ______    ______    _____    __    __    ____     _     _      ___      _   _     ______  ",
                          " |  ____|  | ____ |  | ____ |  |  __ \\   \\ \\  / /   / __ \\   |  \\  | |    / _ \\    | | / /   |  ____| ",
                          " | |____   | |  | |  | |  | |  | |  \\ \\   \\ \\/ /   / /  \\_\\  | \\ \\ | |   / / \\ \\   | |/ /    | |____  ",
@@ -475,16 +481,35 @@ void welcomeMessage() // foodySnake
     //  " | |       | |__| |  | |__| |  | |__/ /     | |    _____| |  | |  \  |  | |   | |  | | \ \   | |____  ",
     //  " |_|       |______|  |______|  |_____/      |_|    \______/  |_|   \_|  |_|   |_|  |_|  \_\  |______| "};
 
-    int row, col;                                                                  // to store the number of rows and the number of colums of the screen
-    initscr();                                                                     // start the curses mode(initialize the ncurses data structures)
+    win = newwin(4, 100, 0, 0);
+    mvwaddstr(win, 1, 2, "This is the rule for the game:");
+    mvwaddstr(win, 2, 2, "1. This is the FOODY SNAKE game.");                      // to store the number of rows and the number of colums of the screen
+                                                                                   // start the curses mode(initialize the ncurses data structures)
     getmaxyx(stdscr, row, col);                                                    // get the number of rows and columns
     for (int i = -6; i < 1; i++)                                                   // 標題置於中央往上移三行
         mvprintw(row / 2 + i, (col - strlen(mesg[i + 6])) / 2, "%s", mesg[i + 6]); // print the message at the center of the screen
     char pressMesg[] = "Press R/r to see the game rule.              Press any other key to start.";
     mvprintw(row / 2 + 4, (col - strlen(pressMesg)) / 2, "%s", pressMesg); // pressMesg置於中央往下移4行
-    refresh();                                                             // to update the physical terminal optimally
-    getch();                                                               // wait for user input a character
-    // endwin(); // clean up all allocated resources from ncurses
+    // refresh();                                                             // to update the physical terminal optimally
+    // getch();  // wait for user input a character
+    //  endwin(); // clean up all allocated resources from ncurses
+    refresh();
+    ch = getch();
+    switch (ch)
+    {
+    case 'r': /* 按 'q' 鍵離開 */
+        endwin();
+
+    case '\t':         /* 按 [TAB] 鍵 呼叫另一視窗   */
+        touchwin(win); /* wrefresh() 前需 touchwin() */
+        wrefresh(win);
+        getch(); /* 按任意鍵關閉視窗 */
+        touchwin(stdscr);
+        break;
+
+    default:
+        break;
+    }
 }
 
 void gameoverMessage()
