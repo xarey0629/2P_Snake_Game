@@ -46,6 +46,7 @@ struct Snake
 
 // 預先宣告一些會使用的參數以及函示
 int ch, eat, i;
+bool gameStatus = true;
 list<SNode>::iterator turn_iter;
 
 // 初始化蛇蛇
@@ -124,11 +125,21 @@ int main()
     // Continuing
     while (ch == R)
     {
-        while (ch != KEY_F(2)) // Press F2 to exit the game.
+        while (ch != KEY_F(2) && gameStatus) // Press F2 to exit the game.
         {
             ch = getch();
             controllerP0(snake0);
             controllerP1(snake1); // 控制：上下左右
+            if (crash(snake0) || (snake0.front.x == bomb.x && snake0.front.y == bomb.y))
+            {
+                gameStatus = false;
+                end_game("player_1");
+            }
+            if (crash(snake1) || (snake1.front.x == bomb.x && snake1.front.y == bomb.y))
+            {
+                gameStatus = false;
+                end_game("player_0");
+            }
         }
         end_game("Tie");
         // End Page
@@ -301,7 +312,6 @@ void show(int signumber)
             snake0.back.x++;
             break;
         }
-
         if (snake0.turn_direction.size() && (snake0.back.x == snake0.turn.front().x && snake0.back.y == snake0.turn.front().y))
         {
             snake0.back_direction = snake0.turn_direction.front();
@@ -309,7 +319,10 @@ void show(int signumber)
             snake0.turn.pop_front();
         }
         if (crash(snake0) || (snake0.front.x == bomb.x && snake0.front.y == bomb.y))
+        {
+            gameStatus = false;
             end_game("player_1");
+        }
 
         // snake1
         eat = 0;
@@ -364,7 +377,10 @@ void show(int signumber)
             snake1.turn.pop_front();
         }
         if (crash(snake1) || (snake1.front.x == bomb.x && snake1.front.y == bomb.y))
+        {
+            gameStatus = false;
             end_game("player_0");
+        }
 
         // refresh board
         refresh();
@@ -383,14 +399,17 @@ void end_game(char *winner)
 
 void restartGame()
 {
+    clear();
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
     value.it_value.tv_usec = 400000;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 400000;
+    value.it_interval.tv_usec = 200000;
     setitimer(ITIMER_REAL, &value, NULL);
-    // signal(SIGALRM, &show); // Start Alarm
+    initSnake(snake0);
+    initSnake(snake1);
+    gameStatus = true;
 }
 
 // 判定遊戲結束與否
@@ -530,7 +549,7 @@ void gameoverMessage()
     getmaxyx(stdscr, row, col);                                                    // get the number of rows and columns
     for (int i = -6; i < 1; i++)                                                   // 標題置於中央往上移三行
         mvprintw(row / 2 + i, (col - strlen(mesg[i + 6])) / 2, "%s", mesg[i + 6]); // print the message at the center of the screen
-    char pressMesg[] = "Press P/p to play again.              Press Q/q to quit.";
+    char pressMesg[] = "Press R to play again.               Press Q/to quit.";
     mvprintw(row / 2 + 4, (col - strlen(pressMesg)) / 2, "%s", pressMesg); // pressMesg置於中央往下移4行
     refresh();                                                             // to update the physical terminal optimally
     // getch();                                                               // wait for user input a character
