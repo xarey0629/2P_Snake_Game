@@ -21,6 +21,7 @@ using namespace std;
 #define A 97
 #define D 100
 #define R 114
+#define Q 113
 
 #define random(x) (rand() % x + 1) // 用來產生隨機數
 
@@ -139,10 +140,20 @@ int main()
         // End Page
         clear();
         gameoverMessage();
-        ch = getch();
-        if (ch == R)
+        
+        do
         {
+            ch = getch();
+        } while (ch != R && ch != Q);
+
+        switch (ch)
+        {
+        case R:
             restartGame();
+            break;
+        
+        default:
+            break;
         }
     }
 
