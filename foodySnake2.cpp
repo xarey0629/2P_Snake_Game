@@ -255,6 +255,8 @@ void draw_node(SNode node, char paint)
 }
 void show(int signumber)
 {
+    int row, col;
+    getmaxyx(stdscr, row, col); // get the number of rows and columns
     if (signumber == SIGALRM)
     {
         // snake0
@@ -265,7 +267,7 @@ void show(int signumber)
         {
             eat = 1;
             snake0.len++;
-            mvprintw(22, 0, "******  Game: FoodySnake  Len:%d  ******", snake0.len);
+            mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
             fruit.x = random(19);
             fruit.y = random(19);
             draw_node(fruit, '*');
@@ -325,7 +327,7 @@ void show(int signumber)
         {
             eat = 1;
             snake1.len++;
-            mvprintw(23, 0, "******  Game: FoodySnake  Len:%d  ******", snake1.len);
+            mvprintw(row / 2 - 11, col / 2 + 9, "******  Player 2  Len:%d  ******", snake1.len);
             fruit.x = random(18);
             fruit.y = random(18);
             draw_node(fruit, '*');
@@ -400,9 +402,40 @@ void restartGame()
     value.it_value.tv_usec = 400000;
     value.it_interval.tv_sec = 0;
     value.it_interval.tv_usec = 200000;
-    setitimer(ITIMER_REAL, &value, NULL);
+    // Terminal Settings
+    initscr();            // 初始化虛擬屏幕
+    raw();                // 禁用行緩沖
+    noecho();             // 關閉鍵盤回顯
+    keypad(stdscr, TRUE); // 開啟功能鍵盤
+    drawBorder();         // draw the game border
+
+    // 蛇蛇初始資料
     initSnake(snake0);
     initSnake(snake1);
+
+    // 隨機播種
+    fruit.x = random(20);
+    fruit.y = random(20);
+    bomb.x = random(20);
+    bomb.y = random(20);
+
+    // Draw init location.
+    draw_node(snake0, '0');
+    draw_node(snake1, '1');
+    draw_node(fruit, '*');
+    draw_node(bomb, 'x');
+
+    int row, col; // to store the number of rows and the number of colums of the screen
+    // initscr(); // start the curses mode(initialize the ncurses data structures)
+    getmaxyx(stdscr, row, col); // get the number of rows and columns
+    mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
+    mvprintw(row / 2 - 11, col / 2 + 9, "******  Player 2  Len:%d  ******", snake1.len);
+    refresh();
+
+    // Ready to start
+    getch();                              // 等待接收一個空字符，開始遊戲
+    signal(SIGALRM, &show);               // Start Alarm
+    setitimer(ITIMER_REAL, &value, NULL); // 開啟定時器
     gameStatus = true;
 }
 
@@ -486,25 +519,23 @@ void welcomeMessage() // foodySnake
     //  " | |       | |__| |  | |__| |  | |__/ /     | |    _____| |  | |  \  |  | |   | |  | | \ \   | |____  ",
     //  " |_|       |______|  |______|  |_____/      |_|    \______/  |_|   \_|  |_|   |_|  |_|  \_\  |______| "};
 
-    win = newwin(10, 60, 0, 48);
-    box(win, '|', '-');
-    mvwaddstr(win, 1, 2, "This is the rule for the game:");
-    mvwaddstr(win, 2, 2, "1. This is the FOODY SNAKE game.");                      
+                       
     
     getmaxyx(stdscr, row, col);                                                    // get the number of rows and columns
     for (int i = -6; i < 1; i++)                                                   // 標題置於中央往上移三行
         mvprintw(row / 2 + i, (col - strlen(mesg[i + 6])) / 2, "%s", mesg[i + 6]); // print the message at the center of the screen
     char pressMesg[] = "Press R/r to see the game rule.              Press any other key to start.";
     mvprintw(row / 2 + 4, (col - strlen(pressMesg)) / 2, "%s", pressMesg); // pressMesg置於中央往下移4行
-    // refresh();                                                             // to update the physical terminal optimally
-    // getch();  // wait for user input a character
-    //  endwin(); // clean up all allocated resources from ncurses
+
     refresh();
     ch = getch();
     switch (ch)
     {
-    case R: /* 按 'q' 鍵離開 */
-        endwin();
+    case R: /* 按 'r' 顯示規則頁 */
+        win = newwin(10, 60, 0, 48);
+        box(win, '|', '-');
+        mvwaddstr(win, 1, 2, "This is the rule for the game:");
+        mvwaddstr(win, 2, 2, "1. This is the FOODY SNAKE game.");
 
     case '\t':         /* 按 [TAB] 鍵 呼叫另一視窗   */
         touchwin(win); /* wrefresh() 前需 touchwin() */
@@ -542,11 +573,9 @@ void gameoverMessage()
     getmaxyx(stdscr, row, col);                                                    // get the number of rows and columns
     for (int i = -6; i < 1; i++)                                                   // 標題置於中央往上移三行
         mvprintw(row / 2 + i, (col - strlen(mesg[i + 6])) / 2, "%s", mesg[i + 6]); // print the message at the center of the screen
-    char pressMesg[] = "Press R to play again.               Press Q/to quit.";
+    char pressMesg[] = "Press R/r to play again.               Press Q/q to quit.";
     mvprintw(row / 2 + 4, (col - strlen(pressMesg)) / 2, "%s", pressMesg); // pressMesg置於中央往下移4行
     refresh();                                                             // to update the physical terminal optimally
-    // getch();                                                               // wait for user input a character
-    // endwin();                                                              // clean up all allocated resources from ncurses
 }
 
 void drawBorder()
