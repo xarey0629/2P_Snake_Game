@@ -51,6 +51,8 @@ list<SNode>::iterator turn_iter;
 
 // 初始化蛇蛇
 void initSnake(Snake &snake);
+// draw the game border
+void drawBorder();
 // 把蛇、水果畫上Terminal
 void draw_node(Snake snake, char paint);
 void draw_node(SNode node, char paint);
@@ -67,7 +69,7 @@ void gameoverMessage();
 // Main Function
 int main()
 {
-    welcomeMessage();
+    welcomeMessage(); // 顯示遊戲首頁
     clear();
 
     // Time Settings
@@ -86,16 +88,17 @@ int main()
     keypad(stdscr, TRUE); // 開啟功能鍵盤
 
     // Draw Border
-    for (int i = 48; i < 88; i++)
-    {
-        mvaddch(0, i, '-');
-        mvaddch(21, i, '-');
-    }
-    for (int i = 0; i < 21; i++)
-    {
-        mvaddch(i, 48, '|');
-        mvaddch(i, 89, '|');
-    }
+    // for (int i = 48; i < 88; i++)
+    // {
+    //     mvaddch(0, i, '-');
+    //     mvaddch(21, i, '-');
+    // }
+    // for (int i = 0; i < 21; i++)
+    // {
+    //     mvaddch(i, 48, '|');
+    //     mvaddch(i, 89, '|');
+    // }
+    drawBorder(); // draw the game border
 
     // 蛇蛇初始資料
     initSnake(snake0);
@@ -113,8 +116,11 @@ int main()
     draw_node(fruit, '*');
     draw_node(bomb, 'x');
 
-    mvprintw(22, 48, "******  Game: FoodySnake  Len:%d  ******", snake0.len);
-    mvprintw(23, 48, "******  Game: FoodySnake  Len:%d  ******", snake1.len);
+    int row, col; // to store the number of rows and the number of colums of the screen
+    // initscr(); // start the curses mode(initialize the ncurses data structures)
+    getmaxyx(stdscr, row, col); // get the number of rows and columns
+    mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
+    mvprintw(row / 2 - 11, col / 2 + 9, "******  Player 2  Len:%d  ******", snake1.len);
     refresh();
 
     // Ready to start
@@ -495,8 +501,8 @@ void welcomeMessage() // foodySnake
     win = newwin(10, 60, 0, 48);
     box(win, '|', '-');
     mvwaddstr(win, 1, 2, "This is the rule for the game:");
-    mvwaddstr(win, 2, 2, "1. This is the FOODY SNAKE game.");                      // to store the number of rows and the number of colums of the screen
-                                                                                   // start the curses mode(initialize the ncurses data structures)
+    mvwaddstr(win, 2, 2, "1. This is the FOODY SNAKE game.");                      
+    
     getmaxyx(stdscr, row, col);                                                    // get the number of rows and columns
     for (int i = -6; i < 1; i++)                                                   // 標題置於中央往上移三行
         mvprintw(row / 2 + i, (col - strlen(mesg[i + 6])) / 2, "%s", mesg[i + 6]); // print the message at the center of the screen
@@ -552,6 +558,27 @@ void gameoverMessage()
     char pressMesg[] = "Press R to play again.               Press Q/to quit.";
     mvprintw(row / 2 + 4, (col - strlen(pressMesg)) / 2, "%s", pressMesg); // pressMesg置於中央往下移4行
     refresh();                                                             // to update the physical terminal optimally
+    // getch();                                                               // wait for user input a character
+    // endwin();                                                              // clean up all allocated resources from ncurses
+}
+
+void drawBorder()
+{
+    int row, col; // to store the number of rows and the number of colums of the screen
+    initscr(); // start the curses mode(initialize the ncurses data structures)
+    getmaxyx(stdscr, row, col); // get the number of rows and columns
+    for (int i = -40; i < 40; i++) // x長80 y寬21
+    {
+        mvaddch(row / 2 - 12, col / 2 + i, '-');
+        mvaddch(row / 2 - 10, col / 2 + i, '-');
+        mvaddch(row / 2 + 10, col / 2 + i, '-');
+    }
+    for (int i = -12; i < 11; i++)
+    {
+        mvaddch(row / 2 + i, col / 2 - 41, '|');
+        mvaddch(row / 2 + i, col / 2 + 40, '|');
+    }
+    refresh(); // to update the physical terminal optimally
     // getch();                                                               // wait for user input a character
     // endwin();                                                              // clean up all allocated resources from ncurses
 }
