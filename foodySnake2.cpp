@@ -86,19 +86,7 @@ int main()
     raw();                // 禁用行緩沖
     noecho();             // 關閉鍵盤回顯
     keypad(stdscr, TRUE); // 開啟功能鍵盤
-
-    // Draw Border
-    // for (int i = 48; i < 88; i++)
-    // {
-    //     mvaddch(0, i, '-');
-    //     mvaddch(21, i, '-');
-    // }
-    // for (int i = 0; i < 21; i++)
-    // {
-    //     mvaddch(i, 48, '|');
-    //     mvaddch(i, 89, '|');
-    // }
-    drawBorder(); // draw the game border
+    drawBorder();         // draw the game border
 
     // 蛇蛇初始資料
     initSnake(snake0);
@@ -129,7 +117,7 @@ int main()
     setitimer(ITIMER_REAL, &value, NULL); // 開啟定時器
 
     // Continuing
-    while (ch == R)
+    while (gameStatus)
     {
         while (ch != KEY_F(2) && gameStatus) // Press F2 to exit the game.
         {
@@ -515,10 +503,9 @@ void welcomeMessage() // foodySnake
     ch = getch();
     switch (ch)
     {
-    case 'r': /* 按 'q' 鍵離開 */
+    case R: /* 按 'q' 鍵離開 */
         endwin();
-    case 'R':
-        endwin();
+
     case '\t':         /* 按 [TAB] 鍵 呼叫另一視窗   */
         touchwin(win); /* wrefresh() 前需 touchwin() */
         wrefresh(win);
