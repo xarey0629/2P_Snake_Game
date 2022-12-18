@@ -67,6 +67,7 @@ bool crash(Snake &snake);
 void welcomeMessage();
 void gameoverMessage();
 
+
 // Main Function
 int main()
 {
@@ -88,7 +89,6 @@ int main()
     noecho();             // 關閉鍵盤回顯
     keypad(stdscr, TRUE); // 開啟功能鍵盤
     drawBorder();         // draw the game border
-
     // 蛇蛇初始資料
     initSnake(snake0);
     initSnake(snake1);
@@ -543,10 +543,16 @@ void welcomeMessage() // foodySnake
     switch (ch)
     {
     case R: /* 按 'r' 顯示規則頁 */
-        win = newwin(10, 60, 0, 48);
+        win = newwin(10, 90, 0, col/2-45);
         box(win, '|', '-');
         mvwaddstr(win, 1, 2, "This is the rule for the game:");
-        mvwaddstr(win, 2, 2, "1. This is the FOODY SNAKE game.");
+        mvwaddstr(win, 2, 2, "1. In order to win, you must not touch the edge or your opponent's tail.");
+        mvwaddstr(win, 3, 2, "2. To make your snake stronger, you can eat the fruit. It looks like this->*");
+        mvwaddstr(win, 4, 2, "3. However, if you touch the bomb, Boom! Game over!! The bomb looks like this->X");
+        mvwaddstr(win, 5, 2, "4. You can play again or quit by following the instructions shown on the screen.");
+        mvwaddstr(win, 6, 2, "5. Player 0 can use UP/DOWN/LEFT/RIGHT botton to move");
+        mvwaddstr(win, 7, 2, "6. Player 1 can use W/S/A/D botton to move.");
+        mvwaddstr(win, 8, 2, "7. Let's have fun!");
 
     case '\t':         /* 按 [TAB] 鍵 呼叫另一視窗   */
         touchwin(win); /* wrefresh() 前需 touchwin() */
