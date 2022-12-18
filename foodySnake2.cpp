@@ -23,8 +23,6 @@ using namespace std;
 #define R 114
 #define Q 113
 
-#define random(x) (rand() % x + 1) // 用來產生隨機數
-
 // Define Node which contains x and y coordinates.
 struct SNode // 結點
 {
@@ -47,26 +45,32 @@ struct Snake
 
 // 預先宣告一些會使用的參數以及函示
 int ch, eat, i;
+int randx, randy;
+
 bool gameStatus = true;
 list<SNode>::iterator turn_iter;
 
-// 初始化蛇蛇
-void initSnake(Snake &snake);
-// draw the game border
-void drawBorder();
+void randomXY();              // 隨機產生XY座標在(row, col)裡頭
+void initSnake(Snake &snake); // 初始化蛇蛇
+void drawBorder();            // draw the game border
+
 // 把蛇、水果畫上Terminal
 void draw_node(Snake snake, char paint);
 void draw_node(SNode node, char paint);
 void show(int signumber);
+
+// 蛇蛇控制器
 void controllerP0(Snake &snake);
 void controllerP1(Snake &snake);
+
+// end game logistics
 void end_game(char *winner);
 void restartGame();
 bool crash(Snake &snake);
+
 // 初始頁面、最終頁面
 void welcomeMessage();
 void gameoverMessage();
-
 
 // Main Function
 int main()
@@ -78,10 +82,8 @@ int main()
     struct itimerval value;
     value.it_value.tv_sec = 0;
     value.it_value.tv_usec = 400000;
-    // value.it_value.tv_usec = 0;
     value.it_interval.tv_sec = 0;
     value.it_interval.tv_usec = 200000;
-    // signal(SIGALRM, &show); // Start Alarm
 
     // Terminal Settings
     initscr();            // 初始化虛擬屏幕
@@ -89,15 +91,18 @@ int main()
     noecho();             // 關閉鍵盤回顯
     keypad(stdscr, TRUE); // 開啟功能鍵盤
     drawBorder();         // draw the game border
+
     // 蛇蛇初始資料
     initSnake(snake0);
     initSnake(snake1);
 
     // 隨機播種
-    fruit.x = random(20);
-    fruit.y = random(20);
-    bomb.x = random(20);
-    bomb.y = random(20);
+    randomXY();
+    fruit.x = randx;
+    fruit.y = randy;
+    randomXY();
+    bomb.x = randx;
+    bomb.y = randy;
 
     // Draw init location.
     draw_node(snake0, '0');
@@ -105,8 +110,7 @@ int main()
     draw_node(fruit, '*');
     draw_node(bomb, 'x');
 
-    int row, col; // to store the number of rows and the number of colums of the screen
-    // initscr(); // start the curses mode(initialize the ncurses data structures)
+    int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
     mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
     mvprintw(row / 2 - 11, col / 2 + 9, "******  Player 2  Len:%d  ******", snake1.len);
@@ -140,7 +144,7 @@ int main()
         // End Page
         clear();
         gameoverMessage();
-        
+
         do
         {
             ch = getch();
@@ -151,23 +155,39 @@ int main()
         case R:
             restartGame();
             break;
-        
+
         default:
             break;
         }
     }
-
+    // 遊戲結束
     endwin();
 
     return 0;
 }
 
+void randomXY()
+{
+    randx = 0;
+    randy = 0;
+    int row, col;
+    getmaxyx(stdscr, row, col);
+    randx = (col / 2 - 41) + rand() % 80 + 1;
+    randy = (row / 2 - 10) + rand() % 20 + 1;
+    return;
+}
+
 void initSnake(Snake &snake)
 {
-    int position = random(40);
+    int row, col;
+    getmaxyx(stdscr, row, col); // get the number of rows and columns
+    randomXY();
+    int positionX = randx;
+    int positionY = randy;
+
     snake.len = 2;
-    snake.front.x = position + 1, snake.front.y = position;
-    snake.back.x = position, snake.back.y = position;
+    snake.front.x = randx + 1, snake.front.y = randy;
+    snake.back.x = randx, snake.back.y = randy;
     snake0.front_direction = RIGHT, snake0.back_direction = RIGHT;
     snake1.front_direction = D, snake1.back_direction = D;
 }
@@ -279,8 +299,9 @@ void show(int signumber)
             eat = 1;
             snake0.len++;
             mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
-            fruit.x = random(19);
-            fruit.y = random(19);
+            randomXY();
+            fruit.x = randx;
+            fruit.y = randy;
             draw_node(fruit, '*');
         }
         // 在頭的行進方向畫上一個新的點（代表蛇向前進），若吃到水果 -> eat = 1，迴圈跑兩次（共畫上兩個點）
@@ -339,8 +360,9 @@ void show(int signumber)
             eat = 1;
             snake1.len++;
             mvprintw(row / 2 - 11, col / 2 + 9, "******  Player 2  Len:%d  ******", snake1.len);
-            fruit.x = random(18);
-            fruit.y = random(18);
+            randomXY();
+            fruit.x = randx;
+            fruit.y = randy;
             draw_node(fruit, '*');
         }
         for (int i = 0; i <= eat; i++)
@@ -425,10 +447,12 @@ void restartGame()
     initSnake(snake1);
 
     // 隨機播種
-    fruit.x = random(20);
-    fruit.y = random(20);
-    bomb.x = random(20);
-    bomb.y = random(20);
+    randomXY();
+    fruit.x = randx;
+    fruit.y = randy;
+    randomXY();
+    bomb.x = randx;
+    bomb.y = randy;
 
     // Draw init location.
     draw_node(snake0, '0');
@@ -453,11 +477,13 @@ void restartGame()
 // 判定遊戲結束與否
 bool crash(Snake &snake)
 {
+    int row, col;
+    getmaxyx(stdscr, row, col); // get the number of rows and columns
     int Max, Min;
     SNode tmp;
 
     // 是否撞牆
-    if (snake.front.x > 40 || snake.front.x <= 0 || snake.front.y <= 0 || snake.front.y > 20)
+    if (snake.front.x >= (col / 2 + 40) || snake.front.x <= (col / 2 - 41) || snake.front.y <= (row / 2 - 10) || snake.front.y >= (row / 2 + 10))
         return true;
 
     // 是否撞到自己
@@ -530,8 +556,6 @@ void welcomeMessage() // foodySnake
     //  " | |       | |__| |  | |__| |  | |__/ /     | |    _____| |  | |  \  |  | |   | |  | | \ \   | |____  ",
     //  " |_|       |______|  |______|  |_____/      |_|    \______/  |_|   \_|  |_|   |_|  |_|  \_\  |______| "};
 
-                       
-    
     getmaxyx(stdscr, row, col);                                                    // get the number of rows and columns
     for (int i = -6; i < 1; i++)                                                   // 標題置於中央往上移三行
         mvprintw(row / 2 + i, (col - strlen(mesg[i + 6])) / 2, "%s", mesg[i + 6]); // print the message at the center of the screen
@@ -543,7 +567,7 @@ void welcomeMessage() // foodySnake
     switch (ch)
     {
     case R: /* 按 'r' 顯示規則頁 */
-        win = newwin(10, 90, 0, col/2-45);
+        win = newwin(10, 90, 0, col / 2 - 45);
         box(win, '|', '-');
         mvwaddstr(win, 1, 2, "This is the rule for the game:");
         mvwaddstr(win, 2, 2, "1. In order to win, you must not touch the edge or your opponent's tail.");
@@ -597,9 +621,9 @@ void gameoverMessage()
 
 void drawBorder()
 {
-    int row, col; // to store the number of rows and the number of colums of the screen
-    initscr(); // start the curses mode(initialize the ncurses data structures)
-    getmaxyx(stdscr, row, col); // get the number of rows and columns
+    int row, col;                  // to store the number of rows and the number of colums of the screen
+    initscr();                     // start the curses mode(initialize the ncurses data structures)
+    getmaxyx(stdscr, row, col);    // get the number of rows and columns
     for (int i = -40; i < 40; i++) // x長80 y寬21
     {
         mvaddch(row / 2 - 12, col / 2 + i, '-');
