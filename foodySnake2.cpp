@@ -132,12 +132,12 @@ int main()
             if (crash(snake0) || (snake0.front.x == bomb.x && snake0.front.y == bomb.y))
             {
                 gameStatus = false;
-                end_game("player_1");
+                end_game("player 2");
             }
             if (crash(snake1) || (snake1.front.x == bomb.x && snake1.front.y == bomb.y))
             {
                 gameStatus = false;
-                end_game("player_0");
+                end_game("player 1");
             }
         }
         end_game("Tie");
@@ -349,7 +349,7 @@ void show(int signumber)
         if (crash(snake0) || (snake0.front.x == bomb.x && snake0.front.y == bomb.y))
         {
             gameStatus = false;
-            end_game("player_1");
+            end_game("player 2");
         }
 
         // snake1
@@ -408,7 +408,7 @@ void show(int signumber)
         if (crash(snake1) || (snake1.front.x == bomb.x && snake1.front.y == bomb.y))
         {
             gameStatus = false;
-            end_game("player_0");
+            end_game("player 1");
         }
 
         // refresh board
@@ -423,7 +423,9 @@ void end_game(char *winner)
     value.it_interval.tv_sec = 0;
     value.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &value, NULL);
-    mvprintw(22, 0, "*****  Game_over Winner is %s  *****", winner);
+    int row, col;               // to store the number of rows and the number of colums of the screen
+    getmaxyx(stdscr, row, col); // get the number of rows and columns
+    mvprintw(row / 2 - 12, col / 2 - 21, "*****  Game_over Winner is %s  *****", winner);
 }
 
 void restartGame()
@@ -626,14 +628,16 @@ void drawBorder()
     getmaxyx(stdscr, row, col);    // get the number of rows and columns
     for (int i = -40; i < 40; i++) // x長80 y寬21
     {
-        mvaddch(row / 2 - 12, col / 2 + i, '-');
+        mvaddch(row / 2 - 13, col / 2 + i, '-');
         mvaddch(row / 2 - 10, col / 2 + i, '-');
         mvaddch(row / 2 + 10, col / 2 + i, '-');
     }
-    for (int i = -12; i < 11; i++)
+    for (int i = -13; i < 11; i++)
     {
         mvaddch(row / 2 + i, col / 2 - 41, '|');
         mvaddch(row / 2 + i, col / 2 + 40, '|');
+        mvaddch(row / 2 + i, col / 2 - 42, '|');
+        mvaddch(row / 2 + i, col / 2 + 41, '|');
     }
     refresh(); // to update the physical terminal optimally
     // getch();                                                               // wait for user input a character
