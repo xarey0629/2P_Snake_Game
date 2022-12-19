@@ -627,12 +627,13 @@ void welcomeMessage() // foodySnake
     char pressMesg[] = "Press R/r to see the game rule.              Press any other key to start.";
     mvprintw(row / 2 + 4, (col - strlen(pressMesg)) / 2, "%s", pressMesg); // pressMesg置於中央往下移4行
 
+    char startMesg[] = "Press any key to start.";
     refresh();
     ch = getch();
     switch (ch)
     {
     case R: /* 按 'r' 顯示規則頁 */
-        win = newwin(10, 90, 0, col / 2 - 45);
+        win = newwin(12, 100, row / 2 - 7, col / 2 - 50);
         box(win, '|', '-');
         mvwaddstr(win, 1, 2, "This is the rule for the game:");
         mvwaddstr(win, 2, 2, "1. In order to win, you must not touch the edge or your opponent's tail.");
@@ -642,6 +643,7 @@ void welcomeMessage() // foodySnake
         mvwaddstr(win, 6, 2, "5. Player 1 can use UP/DOWN/LEFT/RIGHT button to move");
         mvwaddstr(win, 7, 2, "6. Player 2 can use W/S/A/D button to move.");
         mvwaddstr(win, 8, 2, "7. Let's have fun!");
+        mvwaddstr(win, 10, (100 - strlen(startMesg)) / 2, startMesg);
 
     case '\t':         /* 按 [TAB] 鍵 呼叫另一視窗   */
         touchwin(win); /* wrefresh() 前需 touchwin() */
