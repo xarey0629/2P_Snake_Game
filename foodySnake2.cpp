@@ -120,8 +120,8 @@ int main()
     clear();
     draw_node(snake0, 'O');
     draw_node(snake1, 'Q');
-    draw_node(fruit, '*', 0);
-    draw_node(bomb, 'x', 1);
+    draw_node(fruit, '*');
+    draw_node(bomb, 'x');
     drawBorder(); // draw the game border
 
     int row, col;               // to store the number of rows and the number of colums of the screen
@@ -332,7 +332,7 @@ void show(int signumber)
         randomXY();
         bomb.x = randx;
         bomb.y = randy;
-        draw_node(bomb, 'x', 1);
+        draw_node(bomb, 'x');
     }
     curs_set(0);
     int row, col;
@@ -354,7 +354,7 @@ void show(int signumber)
             fruit.x = randx;
             fruit.y = randy;
 
-            draw_node(fruit, '*', 0);
+            draw_node(fruit, '*');
             
         }
         // 在頭的行進方向畫上一個新的點（代表蛇向前進），若吃到水果 -> eat = 1，迴圈跑兩次（共畫上兩個點）
@@ -419,7 +419,7 @@ void show(int signumber)
             fruit.x = randx;
             fruit.y = randy;
 
-            draw_node(fruit, '*', 0);
+            draw_node(fruit, '*');
             
         }
         for (int i = 0; i <= eat; i++)
@@ -519,8 +519,8 @@ void restartGame()
     // Draw init location.
     draw_node(snake0, 'O');
     draw_node(snake1, 'Q');
-    draw_node(fruit, '*', 0);
-    draw_node(bomb, 'x', 1);
+    draw_node(fruit, '*');
+    draw_node(bomb, 'x');
 
     int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
