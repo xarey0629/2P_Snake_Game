@@ -84,6 +84,8 @@ int main()
     curs_set(0);
     welcomeMessage(); // 顯示遊戲首頁
     clear();
+    cbreak();
+    noecho();
 
     // Time Settings
     struct itimerval value;
@@ -112,16 +114,16 @@ int main()
 
     // Draw init location.
     start_color();
-    init_pair(fruit_pair, COLOR_BLACK, COLOR_GREEN);
-    init_pair(bomb_pair, COLOR_BLACK, COLOR_RED);
-    init_pair(player1, COLOR_BLACK, COLOR_BLUE);
-    init_pair(player2, COLOR_BLACK, COLOR_RED);
-    init_pair(winner_pair, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(fruit_pair, use_default_colors(), COLOR_GREEN);
+    init_pair(bomb_pair, use_default_colors(), COLOR_RED);
+    init_pair(player1, use_default_colors(), COLOR_BLUE);
+    init_pair(player2, use_default_colors(), COLOR_RED);
+    init_pair(winner_pair, use_default_colors(), COLOR_YELLOW);
     clear();
     draw_node(snake0, 'O');
     draw_node(snake1, 'Q');
-    draw_node(fruit, '*');
-    draw_node(bomb, 'x');
+    draw_node(fruit, '*', 0);
+    draw_node(bomb, 'x', 1);
     drawBorder(); // draw the game border
 
     int row, col;               // to store the number of rows and the number of colums of the screen
@@ -332,7 +334,7 @@ void show(int signumber)
         randomXY();
         bomb.x = randx;
         bomb.y = randy;
-        draw_node(bomb, 'x');
+        draw_node(bomb, 'x', 1);
     }
     curs_set(0);
     int row, col;
@@ -354,7 +356,7 @@ void show(int signumber)
             fruit.x = randx;
             fruit.y = randy;
 
-            draw_node(fruit, '*');
+            draw_node(fruit, '*', 0);
             
         }
         // 在頭的行進方向畫上一個新的點（代表蛇向前進），若吃到水果 -> eat = 1，迴圈跑兩次（共畫上兩個點）
@@ -419,7 +421,7 @@ void show(int signumber)
             fruit.x = randx;
             fruit.y = randy;
 
-            draw_node(fruit, '*');
+            draw_node(fruit, '*', 0);
             
         }
         for (int i = 0; i <= eat; i++)
@@ -519,8 +521,8 @@ void restartGame()
     // Draw init location.
     draw_node(snake0, 'O');
     draw_node(snake1, 'Q');
-    draw_node(fruit, '*');
-    draw_node(bomb, 'x');
+    draw_node(fruit, '*', 0);
+    draw_node(bomb, 'x', 1);
 
     int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
