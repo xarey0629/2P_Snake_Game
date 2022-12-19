@@ -22,11 +22,9 @@ using namespace std;
 #define D 100
 #define R 114
 #define Q 113
-<<<<<<< HEAD
 #define fruit_pair 5
 #define bomb_pair  6
-=======
->>>>>>> b542e0a64c5acbdca5c5a05d0d7ffb5f304b1f44
+
 
 // Define Node which contains x and y coordinates.
 struct SNode // 結點
@@ -97,11 +95,11 @@ int main()
     raw();                // 禁用行緩沖
     noecho();             // 關閉鍵盤回顯
     keypad(stdscr, TRUE); // 開啟功能鍵盤
-<<<<<<< HEAD
+
     
-=======
+
     drawBorder();         // draw the game border
->>>>>>> b542e0a64c5acbdca5c5a05d0d7ffb5f304b1f44
+
 
     // 蛇蛇初始資料
     initSnake(snake0);
@@ -119,19 +117,15 @@ int main()
     start_color();
     init_pair(fruit_pair, COLOR_BLACK, COLOR_GREEN);
     init_pair(bomb_pair, COLOR_BLACK, COLOR_RED);
-    
     clear();
     draw_node(snake0, '0');
     draw_node(snake1, '1');
-<<<<<<< HEAD
     draw_node(fruit, '*', 0);
     draw_node(bomb, 'x', 1);
     drawBorder();         // draw the game border
-=======
     draw_node(fruit, '*');
     draw_node(bomb, 'x');
-
->>>>>>> b542e0a64c5acbdca5c5a05d0d7ffb5f304b1f44
+    
     int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
     mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
@@ -339,11 +333,10 @@ void show(int signumber)
             randomXY();
             fruit.x = randx;
             fruit.y = randy;
-<<<<<<< HEAD
+
             draw_node(fruit, '*', 0);
-=======
             draw_node(fruit, '*');
->>>>>>> b542e0a64c5acbdca5c5a05d0d7ffb5f304b1f44
+
         }
         // 在頭的行進方向畫上一個新的點（代表蛇向前進），若吃到水果 -> eat = 1，迴圈跑兩次（共畫上兩個點）
         for (int i = 0; i <= eat; i++)
@@ -404,11 +397,10 @@ void show(int signumber)
             randomXY();
             fruit.x = randx;
             fruit.y = randy;
-<<<<<<< HEAD
+
             draw_node(fruit, '*', 0);
-=======
             draw_node(fruit, '*');
->>>>>>> b542e0a64c5acbdca5c5a05d0d7ffb5f304b1f44
+
         }
         for (int i = 0; i <= eat; i++)
         {
@@ -671,11 +663,7 @@ void drawBorder()
     int row, col;                  // to store the number of rows and the number of colums of the screen
     initscr();                     // start the curses mode(initialize the ncurses data structures)
     getmaxyx(stdscr, row, col);    // get the number of rows and columns
-<<<<<<< HEAD
-    for (int i = -40; i < 40; i++) // x長80  y寬21
-=======
     for (int i = -40; i < 40; i++) // x長80 y寬21
->>>>>>> b542e0a64c5acbdca5c5a05d0d7ffb5f304b1f44
     {
         mvaddch(row / 2 - 13, col / 2 + i, '-');
         mvaddch(row / 2 - 10, col / 2 + i, '-');
