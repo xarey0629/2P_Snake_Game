@@ -48,7 +48,7 @@ struct Snake
 } snake0, snake1;             // 順便宣告 -> 我的蛇蛇
 
 // 預先宣告一些會使用的參數以及函示
-int ch, eat, i;
+int ch, eat, i, timer = 0;
 int randx, randy;
 
 bool gameStatus = true;
@@ -142,11 +142,6 @@ int main()
     // Continuing
     while (gameStatus)
     {
-        draw_node(bomb, ' ');
-        randomXY();
-        bomb.x = randx;
-        bomb.y = randy;
-        draw_node(bomb, 'x', 1);
         while (ch != KEY_F(2) && gameStatus) // Press F2 to exit the game.
         {
             ch = getch();
@@ -330,6 +325,15 @@ void draw_node(SNode node, char paint, int number)
 
 void show(int signumber)
 {
+    timer++;
+    if (timer % 10 == 0) 
+    {
+        draw_node(bomb, ' ');
+        randomXY();
+        bomb.x = randx;
+        bomb.y = randy;
+        draw_node(bomb, 'x', 1);
+    }
     curs_set(0);
     int row, col;
     getmaxyx(stdscr, row, col); // get the number of rows and columns
