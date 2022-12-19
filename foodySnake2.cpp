@@ -23,8 +23,7 @@ using namespace std;
 #define R 114
 #define Q 113
 #define fruit_pair 5
-#define bomb_pair  6
-
+#define bomb_pair 6
 
 // Define Node which contains x and y coordinates.
 struct SNode // 結點
@@ -80,6 +79,7 @@ void gameoverMessage();
 // Main Function
 int main()
 {
+    curs_set(0);
     welcomeMessage(); // 顯示遊戲首頁
     clear();
 
@@ -96,19 +96,14 @@ int main()
     noecho();             // 關閉鍵盤回顯
     keypad(stdscr, TRUE); // 開啟功能鍵盤
 
-    
-
-             
-
-
     // 蛇蛇初始資料
     initSnake(snake0);
     initSnake(snake1);
 
     // 隨機播種
     randomXY();
-    fruit.x = randx;
-    fruit.y = randy;
+    fruit.x = randx; // col / 2 - 41 + 10;
+    fruit.y = randy; // row / 2
     randomXY();
     bomb.x = randx;
     bomb.y = randy;
@@ -122,8 +117,8 @@ int main()
     draw_node(snake1, '1');
     draw_node(fruit, '*', 0);
     draw_node(bomb, 'x', 1);
-    drawBorder();         // draw the game border
-    
+    drawBorder(); // draw the game border
+
     int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
     mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
@@ -298,23 +293,27 @@ void draw_node(SNode node, char paint)
 {
     mvaddch(node.y, node.x, paint);
 }
-void draw_node(SNode node, char paint, int number){
-    if(number == 0){
+void draw_node(SNode node, char paint, int number)
+{
+    if (number == 0)
+    {
         attron(COLOR_PAIR(fruit_pair));
         mvaddch(node.y, node.x, paint);
         attroff(COLOR_PAIR(fruit_pair));
         refresh();
     }
-    if(number == 1){
+    if (number == 1)
+    {
         attron(COLOR_PAIR(bomb_pair));
         mvaddch(node.y, node.x, paint);
         attroff(COLOR_PAIR(bomb_pair));
         refresh();
-    } 
+    }
 }
 
 void show(int signumber)
 {
+    curs_set(0);
     int row, col;
     getmaxyx(stdscr, row, col); // get the number of rows and columns
     if (signumber == SIGALRM)
@@ -334,7 +333,6 @@ void show(int signumber)
 
             draw_node(fruit, '*', 0);
             draw_node(fruit, '*');
-
         }
         // 在頭的行進方向畫上一個新的點（代表蛇向前進），若吃到水果 -> eat = 1，迴圈跑兩次（共畫上兩個點）
         for (int i = 0; i <= eat; i++)
@@ -398,7 +396,6 @@ void show(int signumber)
 
             draw_node(fruit, '*', 0);
             draw_node(fruit, '*');
-
         }
         for (int i = 0; i <= eat; i++)
         {
@@ -496,7 +493,7 @@ void restartGame()
     draw_node(snake1, '1');
     draw_node(fruit, '*', 0);
     draw_node(bomb, 'x', 1);
-    
+
     int row, col; // to store the number of rows and the number of colums of the screen
     // initscr(); // start the curses mode(initialize the ncurses data structures)
     getmaxyx(stdscr, row, col); // get the number of rows and columns
