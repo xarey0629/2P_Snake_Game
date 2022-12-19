@@ -86,9 +86,9 @@ int main()
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
-    value.it_value.tv_usec = 400000;
+    value.it_value.tv_usec = 300000;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 200000;
+    value.it_interval.tv_usec = 300000;
 
     // Terminal Settings
     initscr();            // 初始化虛擬屏幕
@@ -466,9 +466,9 @@ void restartGame()
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
-    value.it_value.tv_usec = 400000;
+    value.it_value.tv_usec = 300000;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 200000;
+    value.it_interval.tv_usec = 300000;
     // Terminal Settings
     initscr();            // 初始化虛擬屏幕
     raw();                // 禁用行緩沖
