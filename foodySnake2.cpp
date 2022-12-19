@@ -98,7 +98,7 @@ int main()
 
     
 
-    drawBorder();         // draw the game border
+             
 
 
     // 蛇蛇初始資料
@@ -123,8 +123,6 @@ int main()
     draw_node(fruit, '*', 0);
     draw_node(bomb, 'x', 1);
     drawBorder();         // draw the game border
-    draw_node(fruit, '*');
-    draw_node(bomb, 'x');
     
     int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
