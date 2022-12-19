@@ -86,9 +86,9 @@ int main()
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
-    value.it_value.tv_usec = 300000;
+    value.it_value.tv_usec = 200000;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 300000;
+    value.it_interval.tv_usec = 200000;
 
     // Terminal Settings
     initscr();            // 初始化虛擬屏幕
@@ -133,6 +133,11 @@ int main()
     // Continuing
     while (gameStatus)
     {
+        draw_node(bomb, ' ');
+        randomXY();
+        bomb.x = randx;
+        bomb.y = randy;
+        draw_node(bomb, 'x', 1);
         while (ch != KEY_F(2) && gameStatus) // Press F2 to exit the game.
         {
             ch = getch();
@@ -295,6 +300,7 @@ void draw_node(SNode node, char paint)
 }
 void draw_node(SNode node, char paint, int number)
 {
+    // fruit
     if (number == 0)
     {
         attron(COLOR_PAIR(fruit_pair));
@@ -302,6 +308,8 @@ void draw_node(SNode node, char paint, int number)
         attroff(COLOR_PAIR(fruit_pair));
         refresh();
     }
+
+    // bomb
     if (number == 1)
     {
         attron(COLOR_PAIR(bomb_pair));
@@ -465,9 +473,9 @@ void restartGame()
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
-    value.it_value.tv_usec = 300000;
+    value.it_value.tv_usec = 200000;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 300000;
+    value.it_interval.tv_usec = 200000;
     // Terminal Settings
     initscr();            // 初始化虛擬屏幕
     raw();                // 禁用行緩沖
