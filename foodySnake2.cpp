@@ -113,8 +113,8 @@ int main()
     init_pair(fruit_pair, COLOR_BLACK, COLOR_GREEN);
     init_pair(bomb_pair, COLOR_BLACK, COLOR_RED);
     clear();
-    draw_node(snake0, '0');
-    draw_node(snake1, '1');
+    draw_node(snake0, 'O');
+    draw_node(snake1, 'Q');
     draw_node(fruit, '*', 0);
     draw_node(bomb, 'x', 1);
     drawBorder(); // draw the game border
@@ -352,7 +352,7 @@ void show(int signumber)
                 snake0.front.x++;
                 break;
             }
-            draw_node(snake0.front, '0');
+            draw_node(snake0.front, 'O');
         }
         // 紀錄尾巴方向
         switch (snake0.back_direction)
@@ -414,7 +414,7 @@ void show(int signumber)
                 snake1.front.x++;
                 break;
             }
-            draw_node(snake1.front, '1');
+            draw_node(snake1.front, 'Q');
         }
         switch (snake1.back_direction)
         {
@@ -489,8 +489,8 @@ void restartGame()
     bomb.y = randy;
 
     // Draw init location.
-    draw_node(snake0, '0');
-    draw_node(snake1, '1');
+    draw_node(snake0, 'O');
+    draw_node(snake1, 'Q');
     draw_node(fruit, '*', 0);
     draw_node(bomb, 'x', 1);
 
