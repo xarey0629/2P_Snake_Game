@@ -24,7 +24,9 @@ using namespace std;
 #define Q 113
 #define fruit_pair 5
 #define bomb_pair 6
-
+#define player1 7
+#define player2 8
+#define winner_pair 9
 // Define Node which contains x and y coordinates.
 struct SNode // 結點
 {
@@ -86,9 +88,9 @@ int main()
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
-    value.it_value.tv_usec = 300000;
+    value.it_value.tv_usec = 400000;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 300000;
+    value.it_interval.tv_usec = 200000;
 
     // Terminal Settings
     initscr();            // 初始化虛擬屏幕
@@ -112,6 +114,9 @@ int main()
     start_color();
     init_pair(fruit_pair, COLOR_BLACK, COLOR_GREEN);
     init_pair(bomb_pair, COLOR_BLACK, COLOR_RED);
+    init_pair(player1, COLOR_BLACK, COLOR_BLUE);
+    init_pair(player2, COLOR_BLACK, COLOR_RED);
+    init_pair(winner_pair, COLOR_BLACK, COLOR_YELLOW);
     clear();
     draw_node(snake0, 'O');
     draw_node(snake1, 'Q');
@@ -121,8 +126,12 @@ int main()
 
     int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
+    attron(COLOR_PAIR(player1));
     mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
+    attroff(COLOR_PAIR(player1));
+    attron(COLOR_PAIR(player2));
     mvprintw(row / 2 - 11, col / 2 + 9, "******  Player 2  Len:%d  ******", snake1.len);
+    attroff(COLOR_PAIR(player2));
     refresh();
 
     // Ready to start
@@ -326,12 +335,15 @@ void show(int signumber)
         {
             eat = 1;
             snake0.len++;
+            attron(COLOR_PAIR(player1));
             mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
+            attroff(COLOR_PAIR(player1));
             randomXY();
             fruit.x = randx;
             fruit.y = randy;
 
             draw_node(fruit, '*', 0);
+            
         }
         // 在頭的行進方向畫上一個新的點（代表蛇向前進），若吃到水果 -> eat = 1，迴圈跑兩次（共畫上兩個點）
         for (int i = 0; i <= eat; i++)
@@ -388,7 +400,9 @@ void show(int signumber)
         {
             eat = 1;
             snake1.len++;
+            attron(COLOR_PAIR(player2));
             mvprintw(row / 2 - 11, col / 2 + 9, "******  Player 2  Len:%d  ******", snake1.len);
+            attroff(COLOR_PAIR(player2));
             randomXY();
             fruit.x = randx;
             fruit.y = randy;
@@ -456,7 +470,10 @@ void end_game(char *winner)
     setitimer(ITIMER_REAL, &value, NULL);
     int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
+    attron(COLOR_PAIR(winner_pair));
     mvprintw(row / 2 - 12, col / 2 - 21, "*****  Game_over Winner is %s  *****", winner);
+    attroff(COLOR_PAIR(winner_pair));
+    refresh();
 }
 
 void restartGame()
@@ -465,9 +482,9 @@ void restartGame()
     // Time Settings
     struct itimerval value;
     value.it_value.tv_sec = 0;
-    value.it_value.tv_usec = 300000;
+    value.it_value.tv_usec = 400000;
     value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 300000;
+    value.it_interval.tv_usec = 200000;
     // Terminal Settings
     initscr();            // 初始化虛擬屏幕
     raw();                // 禁用行緩沖
@@ -493,11 +510,14 @@ void restartGame()
     draw_node(fruit, '*', 0);
     draw_node(bomb, 'x', 1);
 
-    int row, col; // to store the number of rows and the number of colums of the screen
-    // initscr(); // start the curses mode(initialize the ncurses data structures)
+    int row, col;               // to store the number of rows and the number of colums of the screen
     getmaxyx(stdscr, row, col); // get the number of rows and columns
+    attron(COLOR_PAIR(player1));
     mvprintw(row / 2 - 11, col / 2 - 40, "******  Player 1  Len:%d  ******", snake0.len);
+    attroff(COLOR_PAIR(player1));
+    attron(COLOR_PAIR(player2));
     mvprintw(row / 2 - 11, col / 2 + 9, "******  Player 2  Len:%d  ******", snake1.len);
+    attroff(COLOR_PAIR(player2));
     refresh();
 
     // Ready to start
