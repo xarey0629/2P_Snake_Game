@@ -332,7 +332,6 @@ void show(int signumber)
             fruit.y = randy;
 
             draw_node(fruit, '*', 0);
-            draw_node(fruit, '*');
         }
         // 在頭的行進方向畫上一個新的點（代表蛇向前進），若吃到水果 -> eat = 1，迴圈跑兩次（共畫上兩個點）
         for (int i = 0; i <= eat; i++)
@@ -395,7 +394,7 @@ void show(int signumber)
             fruit.y = randy;
 
             draw_node(fruit, '*', 0);
-            draw_node(fruit, '*');
+            
         }
         for (int i = 0; i <= eat; i++)
         {
